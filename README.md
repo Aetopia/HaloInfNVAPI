@@ -9,13 +9,13 @@ HaloInfNVAPI.exe <Option> <Value>
 - LODBias: Off/Low/Medium/High
 ```
 
-1. FPS
-    Valid values range from 20 to 1000 FPS.   
-    The maximum framerate option is altered.
+1. FPS    
+    Valid values range from 20 to 1000 FPS.     
+    The maximum framerate option is altered.    
   
-2. LODBias: 
-    This value uses a preset based system.
-    This option alters the driver profile's LOD Bias (DX) value which controls the level of detail within the game. (This only affects the game's textures.)
+2. LODBias  
+    This value uses a preset based system.    
+    This option alters the driver profile's LOD Bias (DX) value which controls the level of detail within the game. (This only affects the game's textures.)   
     - Off: NVIDIA Default.
     - Low: Value of `-1` is used.
     - Medium: Value of `-1.5` is used.
