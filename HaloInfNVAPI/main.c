@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
 		.version = NVDRS_SETTING_VER,
 		.settingId = VSYNCMODE_ID,
 		.settingType = NVDRS_DWORD_TYPE,
-		.u32CurrentValue = 0 };
+		.u32CurrentValue = VSYNCMODE_FORCEOFF };
 
 	NVDRS_SETTING sDriverControlledLODBias = {
 		.version = NVDRS_SETTING_VER,
