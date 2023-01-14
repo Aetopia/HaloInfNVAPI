@@ -82,9 +82,10 @@ int main(int argc, char* argv[]) {
 	else if (!strcmp(opt, "fps")) {
 		if (strspn(val, "0123456789") == strlen(val)) {
 			sFramerateLimiter.u32CurrentValue = atoi(val);
-			
+
 			if (sFramerateLimiter.u32CurrentValue >= 20 &&
-				sFramerateLimiter.u32CurrentValue <= 1000) {
+				sFramerateLimiter.u32CurrentValue <= 1000 ||
+				!sFramerateLimiter.u32CurrentValue) {
 				if (NvAPI_DRS_SetSetting(hSession, hProfile, &sFramerateLimiter)) {
 					printf("Error: Failed to set Framerate Limiter!\n");
 					return 1;
