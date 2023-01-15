@@ -6,30 +6,19 @@
 
 int main(int argc, char* argv[]) {
 	if (argc != 3) {
-		printf("HaloInfNVAPI.exe <Option> <Value>\n- <Option>: <Values>\n- FPS: 20 - 1000\n- LODBias: Off/Low/Medium/High\n");
+		printf("HaloInfNVAPI.exe <Option> <Value>\n- <Option>: <Values>\n- FPS: 20 - 1000\n- LODBias: 0/-1/-1.5/-2/-2.5/-3\n");
 		return 1;
 	};
 	char* opt = _strlwr(argv[1]);
 	char* val = _strlwr(argv[2]);
 	NvDRSSessionHandle hSession;
 	NvDRSProfileHandle hProfile;
+	NVDRS_SETTING sDriverControlledLODBias = { .version = NVDRS_SETTING_VER }, sVSync = { .version = NVDRS_SETTING_VER };
 
 	NVDRS_SETTING sFramerateLimiter = {
 		.version = NVDRS_SETTING_VER,
 		.settingId = FRL_FPS_ID,
 		.settingType = NVDRS_DWORD_TYPE };
-
-	NVDRS_SETTING sVSync = {
-		.version = NVDRS_SETTING_VER,
-		.settingId = VSYNCMODE_ID,
-		.settingType = NVDRS_DWORD_TYPE,
-		.u32CurrentValue = VSYNCMODE_FORCEOFF };
-
-	NVDRS_SETTING sDriverControlledLODBias = {
-		.version = NVDRS_SETTING_VER,
-		.settingId = AUTO_LODBIASADJUST_ID,
-		.settingType = NVDRS_DWORD_TYPE,
-		.u32CurrentValue = 1 };
 
 	NVDRS_SETTING sLODBiasDX = {
 		.version = NVDRS_SETTING_VER,
@@ -49,21 +38,36 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
-	if (NvAPI_DRS_SetSetting(hSession, hProfile, &sVSync) ||
-		NvAPI_DRS_SetSetting(hSession, hProfile, &sDriverControlledLODBias)) {
-		printf("Error: Failed to enable Driver Controlled LOD Bias or disable V-Sync.");
+	if (NvAPI_DRS_GetSetting(hSession, hProfile, VSYNCMODE_ID, &sVSync) ||
+		NvAPI_DRS_GetSetting(hSession, hProfile, AUTO_LODBIASADJUST_ID, &sDriverControlledLODBias)) {
+		printf("Error: Failed to get V-Sync or Driver Controlled LOD Bias Settings.\n");
 		return 1;
-	};
+	}
+
+	if (sVSync.u32CurrentValue != VSYNCMODE_FORCEOFF)
+		if (NvAPI_DRS_SetSetting(hSession, hProfile, &sVSync)) {
+			printf("Error: Failed to set V-Sync to Force Off.\n");
+			return 1;
+		};
+	if (sDriverControlledLODBias.u32CurrentValue != 1)
+		if (NvAPI_DRS_SetSetting(hSession, hProfile, &sDriverControlledLODBias)) {
+			printf("Error: Failed to enable Driver Controlled LOD Bias..");
+			return 1;
+		};
 
 	if (!strcmp(opt, "lodbias")) {
-		if (!strcmp(val, "off"))
+		if (!strcmp(val, "0"))
 			sLODBiasDX.u32CurrentValue = 0;
-		else if (!strcmp(val, "low"))
+		else if (!strcmp(val, "-1"))
 			sLODBiasDX.u32CurrentValue = 0xFFFFFFF8;
-		else if (!strcmp(val, "medium"))
+		else if (!strcmp(val, "-1.5"))
 			sLODBiasDX.u32CurrentValue = 0xFFFFFFF4;
-		else if (!strcmp(val, "high"))
+		else if (!strcmp(val, "-2"))
 			sLODBiasDX.u32CurrentValue = 0xFFFFFFF0;
+		else if (!strcmp(val, "-2.5"))
+			sLODBiasDX.u32CurrentValue = 0xFFFFFFEC;
+		else if (!strcmp(val, "-3"))
+			sLODBiasDX.u32CurrentValue = 0xFFFFFFE8;
 		else {
 			printf("Error: Invalid LOD Bias Value!\n");
 			return 1;

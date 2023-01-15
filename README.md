@@ -16,10 +16,12 @@ HaloInfNVAPI.exe <Option> <Value>
 2. LODBias  
     This value uses a preset based system.    
     This option alters the driver profile's LOD Bias (DX) value which controls the level of detail within the game. (This only affects the game's textures.)   
-    - Off: NVIDIA Default.
-    - Low: Value of `-1` is used.
-    - Medium: Value of `-1.5` is used.
-    - High: Value of `-2.0` is used.
+    - 0
+    - -1
+    - -1.5
+    - -2
+    - -2.5
+    - -3
 
 # Build
 1. Open the Solution file in the latest version of Visual Studio.
