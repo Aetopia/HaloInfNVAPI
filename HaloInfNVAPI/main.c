@@ -13,8 +13,8 @@ int main(int argc, char* argv[]) {
 	char* val = _strlwr(argv[2]);
 	NvDRSSessionHandle hSession;
 	NvDRSProfileHandle hProfile;
-	NVDRS_SETTING sDriverControlledLODBias = { .version = NVDRS_SETTING_VER }, sVSync = { .version = NVDRS_SETTING_VER };
-
+	NVDRS_SETTING sVSync = { .version = NVDRS_SETTING_VER };
+	
 	NVDRS_SETTING sFramerateLimiter = {
 		.version = NVDRS_SETTING_VER,
 		.settingId = FRL_FPS_ID,
@@ -37,23 +37,19 @@ int main(int argc, char* argv[]) {
 		printf("Error: Failed to initialize NvAPI!\n");
 		return 1;
 	}
-
-	if (NvAPI_DRS_GetSetting(hSession, hProfile, VSYNCMODE_ID, &sVSync) ||
-		NvAPI_DRS_GetSetting(hSession, hProfile, AUTO_LODBIASADJUST_ID, &sDriverControlledLODBias)) {
-		printf("Error: Failed to get V-Sync or Driver Controlled LOD Bias Settings.\n");
+	
+	if (NvAPI_DRS_GetSetting(hSession, hProfile, VSYNCMODE_ID, &sVSync)) {
+		printf("Error: Failed to get V-Sync Setting.\n");
 		return 1;
-	}
-
-	if (sVSync.u32CurrentValue != VSYNCMODE_FORCEOFF)
+	};
+	
+	if (sVSync.u32CurrentValue != VSYNCMODE_FORCEOFF) {
+		sVSync.u32CurrentValue = VSYNCMODE_FORCEOFF;
 		if (NvAPI_DRS_SetSetting(hSession, hProfile, &sVSync)) {
 			printf("Error: Failed to set V-Sync to Force Off.\n");
 			return 1;
-		};
-	if (sDriverControlledLODBias.u32CurrentValue != 1)
-		if (NvAPI_DRS_SetSetting(hSession, hProfile, &sDriverControlledLODBias)) {
-			printf("Error: Failed to enable Driver Controlled LOD Bias..");
-			return 1;
-		};
+		}
+	}
 
 	if (!strcmp(opt, "lodbias")) {
 		if (!strcmp(val, "0"))
